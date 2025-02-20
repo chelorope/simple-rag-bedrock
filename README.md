@@ -1,12 +1,19 @@
-# Welcome to your CDK JavaScript project
+# RAG using AWS Bedrock
 
-This is a blank project for CDK development with JavaScript.
+This is a test project that deploys an Amazon Bedrock knowledge base using AWS CDK.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app. The build step is not required when using JavaScript.
+## Architecture diagram
 
-## Useful commands
+![Architecture diagram](assets/RagBedrock.jpg "Architecture")
 
-* `npm run test`         perform the jest unit tests
-* `npx cdk deploy`       deploy this stack to your default AWS account/region
-* `npx cdk diff`         compare deployed stack with current state
-* `npx cdk synth`        emits the synthesized CloudFormation template
+## Deploy infraestructure
+
+`npx cdk deploy` deploy this stack to your default AWS account/region
+
+## Upload data to S3
+
+`aws s3 sync data s3://[AppStack.ResumeBucketName]`
+
+## Cleanup
+
+`npx cdk destroy --force`
