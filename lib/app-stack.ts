@@ -1,4 +1,5 @@
-const { Stack, Duration, CfnOutput, RemovalPolicy } = require("aws-cdk-lib");
+import * as cdk from "aws-cdk-lib";
+import { Construct } from "constructs";
 
 const s3 = require("aws-cdk-lib/aws-s3");
 const lambda = require("aws-cdk-lib/aws-lambda");
@@ -7,20 +8,20 @@ const { bedrock } = require("@cdklabs/generative-ai-cdk-constructs");
 const { S3EventSource } = require("aws-cdk-lib/aws-lambda-event-sources");
 const iam = require("aws-cdk-lib/aws-iam");
 
-class AppStack extends Stack {
+class AppStack extends cdk.Stack {
   /**
    *
    * @param {Construct} scope
    * @param {string} id
    * @param {StackProps=} props
    */
-  constructor(scope, id, props) {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     /*********  S3 Bucket and Data Source *********/
 
     const resumeBucket = new s3.Bucket(this, "resumeBucket", {
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
 
@@ -57,7 +58,7 @@ class AppStack extends Stack {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: "index.handler",
       code: lambda.Code.fromAsset("./src/IngestJob"),
-      timeout: Duration.minutes(5),
+      timeout: cdk.Duration.minutes(5),
       environment: {
         KNOWLEDGE_BASE_ID: resumeKnowledgeBase.knowledgeBaseId,
         DATA_SOURCE_ID: resumeDataSource.dataSourceId,
@@ -79,7 +80,7 @@ class AppStack extends Stack {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: "index.handler",
       code: lambda.Code.fromAsset("./src/queryKnowledgeBase"),
-      timeout: Duration.minutes(5),
+      timeout: cdk.Duration.minutes(5),
       environment: {
         KNOWLEDGE_BASE_ID: resumeKnowledgeBase.knowledgeBaseId,
       },
@@ -106,15 +107,15 @@ class AppStack extends Stack {
       })
     );
 
-    new CfnOutput(this, "KnowledgeBaseId", {
+    new cdk.CfnOutput(this, "KnowledgeBaseId", {
       value: resumeKnowledgeBase.knowledgeBaseId,
     });
 
-    new CfnOutput(this, "QueryFunctionUrl", {
+    new cdk.CfnOutput(this, "QueryFunctionUrl", {
       value: fnUrl.url,
     });
 
-    new CfnOutput(this, "ResumeBucketName", {
+    new cdk.CfnOutput(this, "ResumeBucketName", {
       value: resumeBucket.bucketName,
     });
   }
